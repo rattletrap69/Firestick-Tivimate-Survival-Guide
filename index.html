@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestick & TiviMate Survival Guide</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a; /* slate-900 */
+            color: #f8fafc; /* slate-50 */
+        }
+        
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        
+        .accordion-content.open {
+            max-height: 1500px; /* Arbitrary large number */
+            opacity: 1;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-button.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Custom Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #22c55e;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* Firestick Remote CSS Drawing */
+        .remote-body {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .nav-ring {
+            background: #0f172a;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5);
+        }
+        .center-btn {
+            background: #1e293b;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast"><i class="fa-solid fa-circle-check mr-2"></i>Copied to clipboard!</div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-orange-500 text-2xl"></i>
+                    <span class="font-bold text-xl tracking-tight text-white">Stream<span class="text-brand-500">Guide</span></span>
+                </div>
+                <div class="hidden lg:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#emergency" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Emergency Fix</a>
+                        <a href="#maintenance" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Maintenance</a>
+                        <a href="#tivimate" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">TiviMate Config</a>
+                        <a href="#recording" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Recording</a>
+                        <a href="#remote-map" class="hover:text-brand-500 transition px-3 py-2 rounded-md text-sm font-medium">Remote Map</a>
+                    </div>
+                </div>
+                <div class="lg:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-800 border-b border-slate-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#emergency" class="block hover:bg-slate-700 px-3 py-2 rounded-md text-base font-medium">Emergency Fix</a>
+                <a href="#maintenance" class="block hover:bg-slate-700 px-3 py-2 rounded-md text-base font-medium">Maintenance</a>
+                <a href="#tivimate" class="block hover:bg-slate-700 px-3 py-2 rounded-md text-base font-medium">TiviMate Config</a>
+                <a href="#recording" class="block hover:bg-slate-700 px-3 py-2 rounded-md text-base font-medium">Recording</a>
+                <a href="#remote-map" class="block hover:bg-slate-700 px-3 py-2 rounded-md text-base font-medium">Remote Map</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
+            Firestick & TiviMate <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-600">Survival Guide</span>
+        </h1>
+        <p class="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
+            The parent-proof, step-by-step procedure to fix storage issues, configure recordings, and completely restore your TV guide.
+        </p>
+        <a href="#emergency" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-brand-600 hover:bg-brand-500 transition shadow-lg shadow-brand-500/30">
+            Start the Emergency Fix <i class="fa-solid fa-arrow-down ml-2"></i>
+        </a>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-20">
+
+        <!-- SECTION 1: EMERGENCY FIX -->
+        <section id="emergency" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-500/20 text-red-500">
+                    <i class="fa-solid fa-truck-medical text-lg"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">Emergency Fix: Getting It Back</h2>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Step 1 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">1</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-2">Bypassing the Amazon PIN</h3>
+                            <p class="text-slate-400 text-sm mb-4">When Firestick storage gets full, it locks up and asks for a PIN to manage apps. We need to enter this to do anything else.</p>
+                            <ul class="list-disc list-outside ml-5 text-slate-300 space-y-2">
+                                <li>When the screen prompts you for a PIN, use the ⏺️ <strong>Directional Circle</strong> on your remote to enter the 5-digit code.</li>
+                                <li>Known Pins: 
+                                    <span class="inline-block bg-slate-900 px-2 py-1 rounded text-orange-400 font-mono text-sm ml-2 border border-slate-700">11111</span>
+                                    <span class="inline-block bg-slate-900 px-2 py-1 rounded text-orange-400 font-mono text-sm ml-2 border border-slate-700">00000</span>
+                                    <span class="inline-block bg-slate-900 px-2 py-1 rounded text-orange-400 font-mono text-sm ml-2 border border-slate-700">55555</span>
+                                </li>
+                                <li>Once entered, it should unlock the screen and let you back to the normal menu.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">2</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-2">Clearing Out Space</h3>
+                            <p class="text-slate-400 text-sm mb-4">We need to delete temporary files to make room for your TV guide.</p>
+                            
+                            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 flex items-start gap-3">
+                                <i class="fa-solid fa-triangle-exclamation text-red-400 mt-0.5"></i>
+                                <p class="text-red-200 text-sm font-medium">CRITICAL: Do NOT click "Clear Data". Only click "Clear Cache".</p>
+                            </div>
+
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 space-y-2">
+                                <li>Press the 🏠 <strong>Home Button</strong> on your remote.</li>
+                                <li>Scroll all the way to the right using the ⏺️ <strong>Directional Circle</strong> to the ⚙️ <strong>Gear Icon (Settings)</strong>.</li>
+                                <li>Click down and select <strong>Applications</strong> > <strong>Manage Installed Applications</strong>.</li>
+                                <li>Click 🔘 <strong>Select</strong> on the biggest apps (like Prime Video or Screensaver).</li>
+                                <li>Scroll down and click 🔘 <strong>Select</strong> on <strong>Clear Cache</strong>.</li>
+                                <li>Press the ↩️ <strong>Back Button</strong> (curved arrow) and repeat for a few other apps.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">3</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-2">Reinstalling TiviMate</h3>
+                            <p class="text-slate-400 text-sm mb-4">If the app was completely deleted to save space, here is how we get it back.</p>
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 space-y-2 mb-4">
+                                <li>Press the 🏠 <strong>Home Button</strong> to go back to the main screen.</li>
+                                <li>Find and open the <strong>Downloader app</strong> (orange background, white arrow).</li>
+                                <li>Click 🔘 <strong>Select</strong> on the search box where it says "Enter a URL or Search Term".</li>
+                                <li>Type in the code below and click <strong>Go</strong>.</li>
+                                <li>When prompted, click <strong>Install</strong>, then click <strong>Open</strong>.</li>
+                            </ol>
+                            <div class="flex items-center gap-3 bg-slate-900 p-3 rounded-lg border border-slate-700 w-max">
+                                <span class="text-slate-400 text-sm">Downloader Code:</span>
+                                <span class="font-mono text-lg font-bold text-brand-400 tracking-wider">272483</span>
+                                <button onclick="copyToClipboard('272483')" class="text-slate-400 hover:text-white transition p-2 bg-slate-800 rounded">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">4</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-2">Unlocking TiviMate Premium</h3>
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 space-y-2 mb-4">
+                                <li>In TiviMate, press ⬅️ <strong>Left Directional</strong> to open the menu, scroll down to ⚙️ <strong>Settings</strong>.</li>
+                                <li>Click 🔘 <strong>Select</strong> on <strong>Unlock Premium</strong>.</li>
+                                <li>Log in using the account details below:</li>
+                            </ol>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Email / Username</div>
+                                        <div class="font-mono text-purple-400">cmorton@tarus.com</div>
+                                    </div>
+                                    <button onclick="copyToClipboard('cmorton@tarus.com')" class="text-slate-400 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                                <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Password</div>
+                                        <div class="font-mono text-purple-400">Passme12!</div>
+                                    </div>
+                                    <button onclick="copyToClipboard('Passme12!')" class="text-slate-400 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <p class="text-slate-300 mt-4 ml-5">4. Follow the on-screen buttons using 🔘 <strong>Select</strong> to finish unlocking.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">5</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-2">Plugging Your Channels Back In</h3>
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 space-y-2 mb-4">
+                                <li>In TiviMate, go to ⚙️ <strong>Settings</strong> > <strong>Playlists</strong> > <strong>Add Playlist</strong>.</li>
+                                <li>Select <strong>Xtream Codes</strong>.</li>
+                                <li>Carefully type exactly what is below into each box <span class="text-yellow-400 font-semibold">(capital letters matter!)</span>:</li>
+                            </ol>
+                            
+                            <div class="space-y-3 mt-4 mb-6">
+                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Server Address</div>
+                                        <div class="font-mono text-emerald-400">http://pl9245637.com:826</div>
+                                    </div>
+                                    <button onclick="copyToClipboard('http://pl9245637.com:826')" class="text-slate-400 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Username</div>
+                                        <div class="font-mono text-emerald-400">johnsmith7</div>
+                                    </div>
+                                    <button onclick="copyToClipboard('johnsmith7')" class="text-slate-400 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Password</div>
+                                        <div class="font-mono text-emerald-400">h6m4Blsycv</div>
+                                    </div>
+                                    <button onclick="copyToClipboard('h6m4Blsycv')" class="text-slate-400 hover:text-white transition"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                            </div>
+
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 space-y-2" start="4">
+                                <li>Make sure "Include VOD" is checked, and click <strong>Next</strong>.</li>
+                                <li>The screen will say "Processing...". Give it a few minutes to download the massive TV guide.</li>
+                                <li>Once it says "Done", click 🔘 <strong>Select</strong> on <strong>Close</strong>.</li>
+                            </ol>
+                            
+                            <div class="mt-6 pt-4 border-t border-slate-700 flex items-center justify-between text-sm text-slate-400">
+                                <div><i class="fa-brands fa-venmo text-[#008CFF] mr-1"></i> Pay David (Venmo): <strong>@David-Smith-2310</strong></div>
+                                <div>Last 4: <strong>5708</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: RECORDING -->
+        <section id="recording" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-600/20 text-red-500">
+                    <i class="fa-solid fa-record-vinyl text-lg"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">Recording on Firestick</h2>
+            </div>
+            
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-slate-700 bg-slate-800/80">
+                    <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-hard-drive text-slate-400 mr-2"></i> Hardware Requirements</h3>
+                    <p class="text-slate-300 text-sm mb-4">Firesticks have very little internal storage. To record TV successfully, you <strong>must</strong> add external storage.</p>
+                    <ul class="list-disc list-outside ml-5 text-slate-300 text-sm space-y-2 mb-4">
+                        <li><strong>OTG Cable / Adapter:</strong> Plugs into your Firestick to split the power port so you can connect a USB drive.</li>
+                        <li><strong>USB Flash Drive:</strong> Must be formatted to <strong>FAT32</strong>. (Note: FAT32 limits individual files to 4GB, which equals roughly 1-2 hours of HD recording).</li>
+                    </ul>
+                </div>
+
+                <div class="p-6">
+                    <div class="space-y-6">
+                        <!-- Step 1 -->
+                        <div>
+                            <h4 class="font-bold text-white mb-2 text-lg">1. Configure TiviMate Recording Folder</h4>
+                            <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm space-y-2">
+                                <li>In TiviMate, go to ⚙️ <strong>Settings</strong> > <strong>Other</strong> > <strong>Recording</strong>.</li>
+                                <li>Click 🔘 <strong>Select</strong> on <strong>Recordings Folder</strong>.</li>
+                                <li>Use the System Picker to locate your attached USB Flash Drive.</li>
+                                <li>Select the folder (or create one named 'Recordings') and grant TiviMate permissions.</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-900 rounded-lg p-5 border border-slate-700">
+                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-play text-brand-400 mr-2"></i> Recording Live TV (Right Now)</h4>
+                                <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm space-y-2">
+                                    <li>While watching a program, press the 🔘 <strong>Select</strong> button to bring up the lower menu.</li>
+                                    <li>Use ➡️ <strong>Right Directional</strong> to scroll to the 🔴 <strong>Record</strong> icon.</li>
+                                    <li>Click 🔘 <strong>Select</strong> to start recording.</li>
+                                </ol>
+                            </div>
+                            <div class="bg-slate-900 rounded-lg p-5 border border-slate-700">
+                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-clock text-blue-400 mr-2"></i> Scheduling a Recording (Future)</h4>
+                                <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm space-y-2">
+                                    <li>In the TV Guide, highlight the future program.</li>
+                                    <li>Press and hold the 🔘 <strong>Select</strong> button to open the right-side menu.</li>
+                                    <li>Scroll to <strong>Custom Recording</strong> and click 🔘 <strong>Select</strong>.</li>
+                                    <li>Verify the times and optionally toggle <strong>Repeat</strong> for series recording.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TIVIMATE CONFIG & MAINTENANCE -->
+        <section id="tivimate" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-purple-500/20 text-purple-400">
+                    <i class="fa-solid fa-tv text-lg"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">TiviMate Optimization & Fixes</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Card -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-white mb-3"><i class="fa-solid fa-calendar-xmark text-slate-400 mr-2"></i> Blank TV Guide (No Info)</h3>
+                    <p class="text-sm text-slate-400 mb-3">Sometimes the guide fails to download automatically. Force it to update:</p>
+                    <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1">
+                        <li>Inside TiviMate, press ⬅️ <strong>Left Directional</strong> until the side menu slides out.</li>
+                        <li>Scroll down to ⚙️ <strong>Settings</strong> (gear icon).</li>
+                        <li>Select <strong>EPG</strong>.</li>
+                        <li>Click 🔘 <strong>Select</strong> on <strong>Update EPG</strong>. Wait a minute for channels to fill.</li>
+                    </ol>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-white mb-3"><i class="fa-solid fa-spinner text-brand-400 mr-2"></i> Buffering or Freezing</h3>
+                    <p class="text-sm text-slate-400 mb-3">Always check storage first (Clear Cache). If still buffering:</p>
+                    <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1">
+                        <li>In TiviMate, go to ⚙️ <strong>Settings</strong> > <strong>Playlists</strong>.</li>
+                        <li>Click your playlist name (pl9245637).</li>
+                        <li>Scroll down and click 🔘 <strong>Select</strong> on <strong>Update Playlist</strong>.</li>
+                        <li class="text-orange-300 mt-2">If all fails: Unplug Firestick power, unplug Wi-Fi router, wait 60s, plug back in.</li>
+                    </ol>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-white mb-3"><i class="fa-solid fa-star text-yellow-400 mr-2"></i> Setting Up "Favorites"</h3>
+                    <p class="text-sm text-slate-400 mb-3">Stop scrolling through 1,000s of channels.</p>
+                    <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1">
+                        <li>Highlight a channel you watch often.</li>
+                        <li>Press and <strong>hold</strong> the 🔘 <strong>Select</strong> button for 2s until the right menu pops up.</li>
+                        <li>Click <strong>Add to Favorites</strong> (a star will appear).</li>
+                        <li>To view them: Press ⬅️ <strong>Left Directional</strong> to open the menu, scroll up to <strong>Favorites</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-white mb-3"><i class="fa-solid fa-rocket text-blue-400 mr-2"></i> Auto-Start on Boot</h3>
+                    <p class="text-sm text-slate-400 mb-3">Make TiviMate act like a normal cable box.</p>
+                    <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1">
+                        <li>Go to ⚙️ <strong>Settings</strong> > <strong>General</strong>.</li>
+                        <li>Turn <strong>Auto start on boot</strong> ON.</li>
+                        <li>Go back to ⚙️ <strong>Settings</strong> > <strong>EPG</strong>.</li>
+                        <li>Turn <strong>Update on app start</strong> ON (keeps guide fresh).</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: VISUAL REMOTE MAP & MANUAL REFERENCE -->
+        <section id="remote-map" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 text-slate-300">
+                    <i class="fa-solid fa-book-open text-lg"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">Visual Remote Mapping & Reference</h2>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 lg:p-10 flex flex-col lg:flex-row gap-10 items-center lg:items-start">
+                
+                <!-- CSS Built Remote Graphic -->
+                <div class="remote-body w-48 rounded-[40px] p-4 flex flex-col items-center gap-6 relative shrink-0">
+                    <!-- Power & Mic Row -->
+                    <div class="flex justify-between w-full px-2 mt-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-power-off text-red-500 text-xs"></i>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-microphone text-blue-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Directional Ring (The Circle) -->
+                    <div class="nav-ring w-36 h-36 rounded-full relative flex items-center justify-center">
+                        <div class="absolute top-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-up"></i></div>
+                        <div class="absolute bottom-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-down"></i></div>
+                        <div class="absolute left-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-left"></i></div>
+                        <div class="absolute right-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-right"></i></div>
+                        <!-- Select Button -->
+                        <div class="center-btn w-14 h-14 rounded-full flex items-center justify-center relative z-10 border border-slate-600">
+                            <span class="text-slate-500 text-[10px] font-bold tracking-widest opacity-30">OK</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 1: Back, Home, Menu -->
+                    <div class="flex justify-between w-full px-1">
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-arrow-left text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-house text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-bars text-slate-300 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Rewind, Play/Pause, Fast Forward -->
+                    <div class="flex justify-between w-full px-1">
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-backward text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-play text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-forward text-slate-300 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 mb-4 text-slate-500 tracking-widest font-bold text-xl opacity-20 italic">
+                        amazon
+                    </div>
+                </div>
+
+                <!-- Explanation Text -->
+                <div class="flex-1 w-full space-y-6">
+                    <h3 class="text-xl font-bold border-b border-slate-700 pb-2 text-white">Default TiviMate Remote Map</h3>
+                    
+                    <div class="space-y-4 text-sm text-slate-300">
+                        <!-- Select Button -->
+                        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                            <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">🔘</span> Select / Center Button</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><span class="text-brand-400 font-semibold">Quick press (Live TV):</span> Brings up bottom Quick Menu & History.</li>
+                                <li><span class="text-brand-400 font-semibold">Long press (Live TV):</span> Opens the Right-side context menu (Add to Fav, Assign EPG).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Back Button -->
+                        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                            <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">↩️</span> Back Button</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><span class="text-brand-400 font-semibold">Quick press (Live TV):</span> Returns to TV Guide.</li>
+                                <li><span class="text-brand-400 font-semibold">Long press (In Guide):</span> Returns instantly to currently playing program.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Directional Nav -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">⬅️</span> Left Directional</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press:</span> Opens Group/Playlist side-menu.</li>
+                                    <li><span class="text-brand-400 font-semibold">Long press (Guide):</span> Scrolls to Past Programs (Catch-up).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">➡️</span> Right Directional</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press (Live):</span> Jumps to previously watched channel.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Error Codes -->
+                        <div class="mt-8 pt-6 border-t border-slate-700">
+                            <h4 class="font-bold text-white mb-3">Common HTTP Error Codes</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-red-400">401</span>: Access denied. Login credentials expired.</div>
+                                <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-orange-400">403</span>: Forbidden. Usually temporary. Try updating.</div>
+                                <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-yellow-400">456</span>: Max connections exceeded.</div>
+                                <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-blue-400">458</span>: Region blocked. Requires VPN.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-500 text-sm mt-10">
+        <p>Created for simple, parent-proof remote support.</p>
+        <p class="mt-2">Disclaimer: This guide is for educational troubleshooting purposes only.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            
+            try {
+                // Try modern approach first
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                }).catch(() => {
+                    // Fallback
+                    document.execCommand('copy');
+                    showToast();
+                });
+            } catch (err) {
+                document.execCommand('copy');
+                showToast();
+            }
+            
+            document.body.removeChild(el);
+        }
+
+        // Show Toast Notification
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Accordion Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const accordions = document.querySelectorAll('.accordion-button');
+            
+            accordions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    
+                    // Toggle current accordion
+                    button.classList.toggle('open');
+                    content.classList.toggle('open');
+                });
+            });
+
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu on click
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
