@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Firestick & TiviMate Survival Guide: 2026 Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a; /* slate-900 */
+            color: #f8fafc; /* slate-50 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Custom Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #22c55e;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* Firestick Remote CSS Drawing */
+        .remote-body {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .nav-ring {
+            background: #0f172a;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5);
+        }
+        .center-btn {
+            background: #1e293b;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Hide scrollbar for mobile tabs */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Tab Content Transitions */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table Styling */
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: left;
+        }
+        .matrix-table th {
+            background-color: #1e293b;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
+
+    <!-- Toast Notification -->
+    <div id="toast"><i class="fa-solid fa-circle-check mr-2"></i>Copied to clipboard!</div>
+
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 pt-8 pb-6 px-4 sm:px-6 lg:px-8 text-center sticky top-0 z-40">
+        <div class="flex items-center justify-center gap-3 mb-2">
+            <i class="fa-solid fa-fire text-orange-500 text-3xl"></i>
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+                Stream<span class="text-brand-500">Guide</span>
+            </h1>
+        </div>
+        <p class="text-xs md:text-sm text-slate-400 max-w-xl mx-auto">
+            The complete, parent-proof manual to recover, optimize, and engineer your IPTV setup.
+        </p>
+
+        <!-- Main Tab Navigation -->
+        <nav class="mt-6 -mb-6 relative z-50">
+            <div class="flex overflow-x-auto no-scrollbar justify-start md:justify-center gap-2 pb-2 px-2 snap-x">
+                <button onclick="openTab('tab-emergency')" id="btn-emergency" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-brand-600 text-white shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-truck-medical mr-1.5"></i> Emergency Fix
+                </button>
+                <button onclick="openTab('tab-faq')" id="btn-faq" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-solid fa-circle-question mr-1.5"></i> FAQ (Newbies)
+                </button>
+                <button onclick="openTab('tab-tivimate')" id="btn-tivimate" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-solid fa-tv mr-1.5"></i> TiviMate
+                </button>
+                <button onclick="openTab('tab-firestick')" id="btn-firestick" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-brands fa-amazon mr-1.5"></i> Firestick
+                </button>
+                <button onclick="openTab('tab-recording')" id="btn-recording" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-solid fa-server mr-1.5"></i> Storage/DVR
+                </button>
+                <button onclick="openTab('tab-hardware')" id="btn-hardware" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-solid fa-microchip mr-1.5"></i> Upgrades
+                </button>
+                <button onclick="openTab('tab-reference')" id="btn-reference" class="tab-btn snap-center shrink-0 px-4 py-2.5 rounded-full text-sm font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i class="fa-solid fa-book-open mr-1.5"></i> Ref Map
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: EMERGENCY FIX -->
+        <!-- ========================================== -->
+        <div id="tab-emergency" class="tab-content active space-y-6">
+            
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-start gap-3">
+                <i class="fa-solid fa-circle-info text-red-400 mt-1"></i>
+                <div class="text-sm text-red-200">
+                    <p class="font-bold mb-1">When to use this guide:</p>
+                    <p>Your TV screen is asking for an Amazon PIN, it says your storage is completely full, and your TiviMate TV Guide app has mysteriously vanished. Don't panic! We just need to take out the digital trash and re-download the app.</p>
+                </div>
+            </div>
+
+            <!-- Global VPN Warning -->
+            <div class="bg-orange-500/10 border-l-4 border-orange-500 rounded-r-xl p-4 mb-6">
+                <h4 class="font-bold text-orange-400 mb-1"><i class="fa-solid fa-triangle-exclamation mr-2"></i> BEWARE: VPN Highly Recommended</h4>
+                <p class="text-sm text-slate-300">Internet Service Providers (like Comcast or Spectrum) actively monitor internet traffic and will deliberately slow down or block IPTV video streams during peak hours. If your TV works perfectly during the day but constantly buffers at night or during big sports games, you <strong>must</strong> install a VPN (like Surfshark or NordVPN) on your device to protect your connection.</p>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="bg-slate-800 rounded-xl p-5 md:p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">1</div>
+                    <div class="flex-1 w-full">
+                        <h3 class="text-xl font-semibold mb-2">Bypassing the Amazon PIN</h3>
+                        <p class="text-slate-400 text-sm mb-4">When the Firestick gets completely stuffed with data, it locks the doors and asks for a PIN code to delete anything. We just need to guess the master code.</p>
+                        <ul class="list-disc list-outside ml-5 text-slate-300 text-sm md:text-base space-y-3">
+                            <li>When you see the PIN screen, use the ⏺️ <strong>Directional Circle</strong> on your remote to punch in a 5-digit code.</li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">Try these common master codes: 
+                                <div class="flex gap-2 mt-1 sm:mt-0">
+                                    <span class="bg-slate-900 px-3 py-1.5 rounded text-orange-400 font-mono text-sm border border-slate-700 cursor-pointer hover:bg-slate-800" onclick="copyToClipboard('11111')">11111</span>
+                                    <span class="bg-slate-900 px-3 py-1.5 rounded text-orange-400 font-mono text-sm border border-slate-700 cursor-pointer hover:bg-slate-800" onclick="copyToClipboard('00000')">00000</span>
+                                    <span class="bg-slate-900 px-3 py-1.5 rounded text-orange-400 font-mono text-sm border border-slate-700 cursor-pointer hover:bg-slate-800" onclick="copyToClipboard('55555')">55555</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-slate-800 rounded-xl p-5 md:p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">2</div>
+                    <div class="flex-1 w-full">
+                        <h3 class="text-xl font-semibold mb-2">Taking Out the Digital Trash (Clearing Space)</h3>
+                        <p class="text-slate-400 text-sm mb-4">Every app on your TV builds up hidden temporary files (called a "Cache"). We need to empty this trash to make room for your TV guide.</p>
+                        
+                        <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                            <h4 class="font-bold text-red-400 mb-1"><i class="fa-solid fa-skull-crossbones mr-2"></i> BEWARE: NEVER CLICK "CLEAR DATA"</h4>
+                            <p class="text-red-200 text-sm">Clicking "Clear Data" is the equivalent of a factory reset for that specific app. It will permanently delete your passwords, favorites, and playlists. You must ONLY click <strong>"Clear Cache"</strong>.</p>
+                        </div>
+
+                        <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm md:text-base space-y-2">
+                            <li>Press the 🏠 <strong>Home Button</strong> on your remote.</li>
+                            <li>Click right until you land on the ⚙️ <strong>Gear Icon (Settings)</strong>.</li>
+                            <li>Go down and click on <strong>Applications</strong>, then click <strong>Manage Installed Applications</strong>.</li>
+                            <li>Find big apps you don't use much (like Prime Video or Amazon Music) and click 🔘 <strong>Select</strong> on them.</li>
+                            <li>Scroll down and click 🔘 <strong>Select</strong> on <strong>Clear Cache</strong>. </li>
+                            <li>Press the ↩️ <strong>Back Button</strong> and do this for a few other apps.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-slate-800 rounded-xl p-5 md:p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">3</div>
+                    <div class="flex-1 w-full">
+                        <h3 class="text-xl font-semibold mb-2">Getting TiviMate Back</h3>
+                        <p class="text-slate-400 text-sm mb-4">Now that we have room, let's re-download the TV app.</p>
+                        <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm md:text-base space-y-2 mb-4">
+                            <li>Press the 🏠 <strong>Home Button</strong> to go to the main screen.</li>
+                            <li>Find the app called <strong>Downloader</strong> (it has a big orange background with a white arrow) and open it.</li>
+                            <li>Click 🔘 <strong>Select</strong> on the empty search box at the top.</li>
+                            <li>Type in this exact number code: <strong class="text-brand-400">272483</strong> and click <strong>Go</strong>.</li>
+                            <li>A window will pop up. Click 🔘 <strong>Select</strong> on <strong>Install</strong>, wait a moment, then click <strong>Open</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="bg-slate-800 rounded-xl p-5 md:p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">4</div>
+                    <div class="flex-1 w-full overflow-hidden">
+                        <h3 class="text-xl font-semibold mb-2">Unlocking Your Premium TV Features</h3>
+                        <p class="text-slate-400 text-sm mb-4">TiviMate is just an empty shell until we unlock it with your paid account.</p>
+                        
+                        <div class="bg-yellow-500/10 border-l-4 border-yellow-500 rounded-r-lg p-3 mb-4">
+                            <p class="text-yellow-200 text-sm"><strong>⚠️ Attention:</strong> You must use the personal Email and Password that <strong>YOU</strong> created via the "TiviMate Companion" app on your smartphone. Do not use your IPTV provider's credentials here.</p>
+                        </div>
+
+                        <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm md:text-base space-y-2 mb-4">
+                            <li>Inside TiviMate, press ⬅️ <strong>Left</strong> to slide open the side menu. Go down to the ⚙️ <strong>Settings gear</strong>.</li>
+                            <li>Click 🔘 <strong>Select</strong> on <strong>Unlock Premium</strong>.</li>
+                            <li>Carefully enter your personal <strong>TiviMate Account Email</strong>.</li>
+                            <li>Enter your personal <strong>TiviMate Password</strong>.</li>
+                            <li>Follow the on-screen prompts and click <strong>Activate</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="bg-slate-800 rounded-xl p-5 md:p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">5</div>
+                    <div class="flex-1 w-full overflow-hidden">
+                        <h3 class="text-xl font-semibold mb-2">Plugging Your Channels Back In</h3>
+                        <p class="text-slate-400 text-sm mb-4">Finally, we tell TiviMate where to find your provider's channels.</p>
+                        
+                        <div class="bg-blue-500/10 border-l-4 border-blue-500 rounded-r-lg p-3 mb-4">
+                            <p class="text-blue-200 text-sm"><strong>⚠️ Missing Info?</strong> If you do not know your Server Address, Username, or Password, you must reach out directly to your IT contact or IPTV provider. These are strictly private and unique to you.</p>
+                        </div>
+
+                        <ol class="list-decimal list-outside ml-5 text-slate-300 text-sm md:text-base space-y-2 mb-4">
+                            <li>In TiviMate, go to ⚙️ <strong>Settings</strong> > <strong>Playlists</strong> > <strong>Add Playlist</strong> > <strong>Xtream Codes</strong>.</li>
+                            <li>Select <strong>Server Address</strong> and type your provider's URL exactly as given. <span class="text-yellow-400 text-xs">(e.g., http://provider-url.com:826)</span></li>
+                            <li>Select <strong>Username</strong> and type your unique IPTV username. <span class="text-yellow-400 text-xs">(Capital letters matter!)</span></li>
+                            <li>Select <strong>Password</strong> and type your unique IPTV password.</li>
+                            <li>Make sure "Include VOD" is checked with a green dot, then click 🔘 <strong>Next</strong>.</li>
+                            <li>The screen will say "Processing." Go grab a coffee; it is downloading thousands of channels.</li>
+                            <li>When it finishes, click 🔘 <strong>Close</strong>. You are done!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: FAQ (NEWBIES) -->
+        <!-- ========================================== -->
+        <div id="tab-faq" class="tab-content space-y-6">
+            <div class="flex items-center gap-3 mb-8 border-b border-slate-700 pb-4">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-500">
+                    <i class="fa-solid fa-circle-question text-xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">Frequently Asked Questions</h2>
+            </div>
+
+            <!-- Global VPN Warning -->
+            <div class="bg-orange-500/10 border-l-4 border-orange-500 rounded-r-xl p-4 mb-6">
+                <h4 class="font-bold text-orange-400 mb-1"><i class="fa-solid fa-triangle-exclamation mr-2"></i> BEWARE: Do I really need a VPN?</h4>
+                <p class="text-sm text-slate-300"><strong>Yes.</strong> Internet Service Providers (like Comcast, AT&T, or Spectrum) actively throttle (slow down) IPTV traffic. If your TV buffers relentlessly at 7:00 PM or during major sporting events, your ISP is punishing you. A VPN scrambles your data so your ISP cannot see what you are watching, completely bypassing their speed limits.</p>
+            </div>
+
+            <div class="space-y-4">
+                
+                <!-- FAQ 1 -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2">
+                        <i class="fa-solid fa-q text-brand-400 mt-1 text-sm"></i>
+                        How does the subscription and billing actually work?
+                    </h3>
+                    <div class="text-slate-300 text-sm pl-6 border-l-2 border-slate-700 ml-2 space-y-2">
+                        <p>Typically, when your IT provider sets you up for the very first time, you pay a one-time upfront cost. This covers the physical hardware (the Firestick), their time spent setting up all the necessary software, and your initial service period (usually the first 6 months of live TV).</p>
+                        <p>After your initial period expires, there is a standard recurring subscription fee to keep the service active. You should reach out directly to your provider to ask about your specific renewal rates and due dates!</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2">
+                        <i class="fa-solid fa-q text-brand-400 mt-1 text-sm"></i>
+                        What is the difference between the default TV app and TiviMate?
+                    </h3>
+                    <div class="text-slate-300 text-sm pl-6 border-l-2 border-slate-700 ml-2 space-y-2">
+                        <p>When you get your stick, it usually comes pre-loaded with a default app (like EZTV or Smarters). This app works fine and gets you access to all your live channels and movies.</p>
+                        <p>However, <strong>TiviMate</strong> is considered the absolute gold-standard upgrade. It is a premium, third-party "guide" app that takes your provider's channels and organizes them beautifully. It makes your IPTV look, feel, and act exactly like a high-end cable or satellite box. If you want the best experience, you want TiviMate.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2">
+                        <i class="fa-solid fa-q text-brand-400 mt-1 text-sm"></i>
+                        Do I have to pay extra for TiviMate? How do I get it?
+                    </h3>
+                    <div class="text-slate-300 text-sm pl-6 border-l-2 border-slate-700 ml-2 space-y-2">
+                        <p>Yes. Because TiviMate is created by an independent software developer (not your TV provider), it requires its own separate license.</p>
+                        <p>To upgrade, you must download the <strong>"TiviMate Companion"</strong> app onto an Android phone or tablet from the Google Play Store. In that app, you create an account and pay a one-time Lifetime Premium fee (usually around $30). Once you pay that one-time fee, you own TiviMate for life! You can then use this guide to log into the app on your TV.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2">
+                        <i class="fa-solid fa-q text-brand-400 mt-1 text-sm"></i>
+                        If I remove my provider's Amazon account, will it delete my TV apps?
+                    </h3>
+                    <div class="text-slate-300 text-sm pl-6 border-l-2 border-slate-700 ml-2 space-y-2">
+                        <p><strong>NO! This is 100% safe.</strong></p>
+                        <p>A lot of people are terrified that clicking "Deregister" on the Amazon account will factory reset their device and wipe out all their IPTV settings. It does not. Deregistering only signs you out of Amazon's official store and Prime Video. Sideloaded apps like TiviMate and your IPTV playlists are completely untouched. <em>(See the "Firestick" tab for safe instructions on how to switch accounts!)</em></p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-5 shadow-lg">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-start gap-2">
+                        <i class="fa-solid fa-q text-brand-400 mt-1 text-sm"></i>
+                        Why can't I just record TV directly onto my Firestick?
+                    </h3>
+                    <div class="text-slate-300 text-sm pl-6 border-l-2 border-slate-700 ml-2 space-y-2">
+                        <p>Streaming sticks like the Firestick or Chromecast are designed to stream video from the internet, not store it. They typically only have about 4 to 8 gigabytes of total storage space, most of which is taken up by the operating system.</p>
+                        <p>A single hour of High-Definition Live TV takes up about 4 gigabytes of space. If you try to hit "Record" without a USB drive plugged in, the Firestick will instantly run out of memory, crash, and possibly delete your apps to save itself. You <strong>must</strong> use an OTG cable and a USB Flash Drive to record.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: TIVIMATE MASTER GUIDE (ALL TIVIMATE) -->
+        <!-- ========================================== -->
+        <div id="tab-tivimate" class="tab-content space-y-10">
+            
+            <div class="bg-brand-500/10 border border-brand-500/30 rounded-xl p-5">
+                <h3 class="text-lg font-bold text-brand-400 mb-2">Why Optimize TiviMate?</h3>
+                <p class="text-sm text-brand-100/80">IPTV services provide massive amounts of data (thousands of live channels and movies). Out of the box, TiviMate isn't perfectly set up to handle this much data smoothly. Following these tutorials will stop buffering, fix your guide, and make the app feel like a premium cable box.</p>
+            </div>
+
+            <!-- Top 5 Optimizations -->
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-700 pb-2"><i class="fa-solid fa-star text-yellow-400 mr-2"></i> The Top 5 Tweaks to Make Immediately</h2>
+                
+                <div class="space-y-4">
+                    <!-- Tweak 1 -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white text-lg">1. Increase the Buffer Size</h3>
+                            <span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded font-bold">Fixes Buffering</span>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Changing this setting forces TiviMate to download a few extra seconds of live TV ahead of time. If your internet briefly blips, the video won't freeze.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>Playback</strong>.</li>
+                            <li>Scroll down to <strong>Buffer Size</strong>.</li>
+                            <li>Change it from "Normal" to <strong>Large</strong> or <strong>Max</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Tweak 2 -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white text-lg">2. Hide Unwanted Countries & Groups</h3>
+                            <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded font-bold">Cleans TV Guide</span>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Your provider gives you channels from all over the world. If you only speak English, there is no reason to load 500 Italian channels. Hiding them makes your guide load 10x faster.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Open the left side menu so you see the list of channel categories (like "USA Entertainment").</li>
+                            <li>Find a category you don't want (like "UK Sports").</li>
+                            <li>Press and <strong>hold</strong> the 🔘 <strong>Select</strong> button for 2 seconds.</li>
+                            <li>In the menu that pops up on the right, click <strong>Hide</strong>.</li>
+                            <li class="text-xs text-slate-500 mt-2">*Note: If you ever want them back, go to Settings > Playlists > Manage Groups to unhide them.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Tweak 3 -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white text-lg">3. Turn on Auto Frame Rate (AFR)</h3>
+                            <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded font-bold">Smoother Sports</span>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Some TV channels broadcast at 60 frames per second, some at 50, and movies at 24. This setting tells your TV to perfectly match the broadcast, preventing the picture from looking "jerky" when a football is thrown or a camera pans across a landscape.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>Playback</strong>.</li>
+                            <li>Select <strong>Auto frame rate (AFR)</strong>.</li>
+                            <li>Turn it <strong>ON</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Tweak 4 -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white text-lg">4. Automate the TV Guide (EPG)</h3>
+                            <span class="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded font-bold">No More Blank Guides</span>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> The "Electronic Program Guide" (EPG) is the data that shows you what show is playing at what time. By default, it doesn't update often enough. This forces it to download fresh data the second you turn on the TV.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>EPG</strong>.</li>
+                            <li>Turn <strong>Update on app start</strong> to <strong>ON</strong>.</li>
+                            <li>Change <strong>Update interval</strong> to <strong>24 Hours</strong> (keeps things fresh without overloading your internet).</li>
+                        </ol>
+                    </div>
+
+                    <!-- Tweak 5 -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white text-lg">5. Setup Your Favorites List</h3>
+                            <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded font-bold">Quality of Life</span>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Stop scrolling through 3,000 channels to find your 10 favorite news and sports stations. Build your own custom category!</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Highlight a channel you watch often in the TV guide.</li>
+                            <li>Press and <strong>hold</strong> the 🔘 <strong>Select</strong> button for 2 seconds.</li>
+                            <li>A menu pops up on the right. Click <strong>Add to Favorites</strong> (a little star will appear).</li>
+                            <li><strong>To view them later:</strong> Press ⬅️ <strong>Left</strong> to open the menu, scroll to the very top, and select <strong>Favorites</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Everyday Fixes -->
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-700 pb-2"><i class="fa-solid fa-wrench text-orange-400 mr-2"></i> Everyday Fixes</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-bomb text-red-400 mr-2"></i> TV Guide is completely blank</h3>
+                        <p class="text-sm text-slate-400 mb-2">If your guide says "No Information" everywhere, the hidden data file got corrupted. Let's nuke it and start over.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>EPG</strong>.</li>
+                            <li>Scroll to the very bottom, click <strong>Clear EPG</strong>.</li>
+                            <li>Once cleared, scroll up and click <strong>Update EPG</strong>. Wait 3 full minutes.</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-ear-deaf text-blue-400 mr-2"></i> The Audio is Out of Sync</h3>
+                        <p class="text-sm text-slate-400 mb-2">If people's lips are moving but the sound doesn't match:</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>While watching the channel, press 🔘 <strong>Select</strong> to pop up the bottom menu.</li>
+                            <li>Scroll right and select the <strong>Audio Sync</strong> icon.</li>
+                            <li>Tap left or right to adjust the milliseconds until the sound matches the lips.</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-clock-rotate-left text-brand-400 mr-2"></i> How to watch a past show (Catch-up)</h3>
+                        <p class="text-sm text-slate-400 mb-2">If you missed the news yesterday, you can often rewind time.</p>
+                        <ul class="list-disc list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Look in the TV guide. Does the channel name have a tiny 🕒 <strong>Clock Icon</strong> next to it?</li>
+                            <li>If yes, simply press and hold ⬅️ <strong>Left</strong> to scroll back into yesterday's schedule.</li>
+                            <li>Click on any past show to watch it like a recorded movie.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-closed-captioning text-purple-400 mr-2"></i> How to turn on Closed Captions</h3>
+                        <p class="text-sm text-slate-400 mb-2">For live TV or Movies on Demand.</p>
+                        <ul class="list-disc list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>While watching, press 🔘 <strong>Select</strong> to open the bottom menu.</li>
+                            <li>Scroll right to the <strong>CC</strong> icon and click it.</li>
+                            <li>Choose the English subtitle track.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deep Reddit Hacks -->
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-700 pb-2"><i class="fa-brands fa-reddit-alien text-orange-500 mr-2"></i> Community Reddit Hacks</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-user-secret text-slate-400 mr-2"></i> User-Agent Spoofing (ISP Blocks)</h3>
+                        <p class="text-sm text-slate-400 mb-3"><strong>Fixes:</strong> HTTP 401/403 Errors, or ISPs throttling you because they recognize the TiviMate signature.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>General</strong> > <strong>User-Agent</strong>.</li>
+                            <li>Type exactly: <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-400 font-mono border border-slate-700">wink/1.31.1</code> or <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-400 font-mono border border-slate-700">IPTVSmartersPro</code></li>
+                            <li>Click Done. This disguises your traffic to the host server.</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 bg-orange-500 transform rotate-45 translate-x-4 -translate-y-4"></div>
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-shield-halved text-emerald-400 mr-2"></i> Beating ISP Deep Packet Throttling</h3>
+                        <p class="text-sm text-slate-400 mb-3"><strong>Fixes:</strong> Perfect TV all day, but massive buffering at 7 PM or during big sporting events.</p>
+                        <ul class="list-disc list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>ISPs actively deploy Deep Packet Inspection to throttle UDP/TCP video streams during peak hours.</li>
+                            <li>You must install a <strong>VPN</strong> (Surfshark, NordVPN, etc.) directly on the device. An encrypted tunnel blinds the ISP to your video data payload.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-film text-purple-400 mr-2"></i> External Player & Manual Subtitles</h3>
+                        <p class="text-sm text-slate-400 mb-3"><strong>Fixes:</strong> VOD Movies crashing, lacking audio tracks, or missing Closed Captions.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Install <strong>VLC</strong> or <strong>MX Player</strong> from the App Store.</li>
+                            <li>In TiviMate, go to Settings > Playback > Use External Player > Set to <strong>VOD Only</strong>.</li>
+                            <li><strong>Missing Subs?</strong> Download the `.srt` file from <em>opensubtitles.com</em> via Downloader, then load it manually using MX Player's "Subtitle > Open" menu.</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-microchip text-blue-400 mr-2"></i> HW/SW Decoding</h3>
+                        <p class="text-sm text-slate-400 mb-3"><strong>Fixes:</strong> Black screen with perfect audio.</p>
+                        <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                            <li>Go to ⚙️ <strong>Settings</strong> > <strong>Playback</strong> > <strong>Audio/Video Decoder</strong>.</li>
+                            <li>Change it from Hardware (HW) to <strong>Software (SW)</strong>. This bypasses a failing hardware chip and uses raw software processing.</li>
+                        </ol>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: FIRESTICK SPEED HACKS -->
+        <!-- ========================================== -->
+        <div id="tab-firestick" class="tab-content space-y-6">
+            
+            <div class="bg-brand-500/10 border border-brand-500/30 rounded-xl p-5 mb-6">
+                <h3 class="text-lg font-bold text-brand-400 mb-2">Why Optimize the Firestick?</h3>
+                <p class="text-sm text-brand-100/80">Out of the box, Amazon Firesticks are programmed to show you as many ads as possible, track your data, and auto-play videos on the home screen. All of these background tasks eat up your device's memory and internet speed—resources that your Live TV app desperately needs. By turning these off, we make the stick faster and more reliable.</p>
+            </div>
+
+            <!-- Force Restart Warning/Fix -->
+            <div class="bg-red-500/10 border-l-4 border-red-500 rounded-r-xl p-4 mb-6">
+                <h4 class="font-bold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation mr-2"></i> BEWARE: Factory Reset Warning</h4>
+                <p class="text-sm text-slate-300">Never click "Factory Reset" unless you are throwing the device in the trash. It will delete everything and permanently wipe your IPTV subscription from the device.</p>
+                <div class="mt-4 pt-4 border-t border-red-500/20">
+                    <h5 class="font-bold text-white mb-2"><i class="fa-solid fa-power-off text-red-400 mr-2"></i> Safe Force Restart / Unfreeze</h5>
+                    <p class="text-sm text-slate-400 mb-2">If the Firestick is completely frozen and you can't reach behind the TV to unplug it, use this secret remote shortcut instead of a reset:</p>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 text-slate-300 text-sm">
+                        Press and <strong>hold</strong> both the 🔘 <strong>Center Button</strong> AND the ⏯️ <strong>Play/Pause</strong> button at the exact same time for <strong>10 seconds</strong>. The screen will go black and the Firestick will reboot itself safely.
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-10">
+                <h2 class="text-2xl font-bold text-white border-b border-slate-700 pb-2"><i class="fa-solid fa-gauge-high text-orange-500 mr-2"></i> The Top Firestick Speed Hacks</h2>
+                
+                <!-- Speed Hack 1 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-white text-lg">1. Stop Auto-Playing Ads on the Home Screen</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Have you noticed your Firestick gets super laggy right when you turn on the TV? It's because Amazon immediately tries to download and play a high-definition movie trailer ad at the top of the screen. Turning this off stops the lag.</p>
+                    <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                        <li>Go to ⚙️ <strong>Settings</strong> (gear icon on the home screen).</li>
+                        <li>Select <strong>Preferences</strong>.</li>
+                        <li>Select <strong>Featured Content</strong>.</li>
+                        <li>Turn <strong>Allow Video Autoplay</strong> to OFF.</li>
+                        <li>Turn <strong>Allow Audio Autoplay</strong> to OFF.</li>
+                    </ol>
+                </div>
+
+                <!-- Speed Hack 2 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-white text-lg">2. Turn Off Amazon's Data Tracking</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Amazon constantly tracks every button you press to build a profile on you. This process runs in the background 24/7, stealing your processing power. Turning it off protects your privacy and speeds up the device.</p>
+                    <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                        <li>Go to ⚙️ <strong>Settings</strong> > <strong>Preferences</strong>.</li>
+                        <li>Select <strong>Privacy Settings</strong>.</li>
+                        <li>Turn <strong>Device Usage Data</strong> to OFF.</li>
+                        <li>Turn <strong>Collect App Usage Data</strong> to OFF.</li>
+                    </ol>
+                </div>
+
+                <!-- Speed Hack 3 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-white text-lg">3. Stop Background Notifications</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3"><strong class="text-slate-200">The Benefit:</strong> Nothing is worse than watching a tense movie and having a giant banner pop up saying "Try Amazon Music!". This silences all pop-ups.</p>
+                    <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-1.5">
+                        <li>Go to ⚙️ <strong>Settings</strong> > <strong>Preferences</strong>.</li>
+                        <li>Select <strong>Notification Settings</strong>.</li>
+                        <li>Click <strong>Do Not Interrupt</strong> so it changes to ON.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Amazon Account Management -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <h3 class="text-xl font-bold text-white mb-3"><i class="fa-solid fa-rotate text-emerald-400 mr-2"></i> Switching Amazon Accounts (Without Losing TiviMate)</h3>
+                
+                <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 mb-4 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                    <p class="text-emerald-200 text-sm font-medium"><strong>100% SAFE:</strong> De-registering an Amazon account <strong>does NOT</strong> delete side-loaded apps like TiviMate or wipe your IPTV settings. It only signs out of Amazon services (like Prime Video).</p>
+                </div>
+
+                <p class="text-sm text-slate-300 mb-3">If your provider left their Amazon account logged into your Firestick, you can safely remove it and add your own personal account by following these exact steps:</p>
+                
+                <ol class="list-decimal list-outside ml-5 text-sm text-slate-300 space-y-2">
+                    <li>Go to the ⚙️ <strong>Gear Icon (Settings)</strong> on the far right of the Firestick Home Screen.</li>
+                    <li>Select <strong>Account & Profile Settings</strong>.</li>
+                    <li>Click on <strong>Amazon Account</strong>.</li>
+                    <li>Select <strong>Deregister</strong>, and then click <strong>Deregister</strong> again to confirm.</li>
+                    <li>The Firestick will briefly refresh and ask you to log in. Enter your own Amazon Email and Password.</li>
+                    <li>Once logged in, open TiviMate. Everything will be exactly as you left it!</li>
+                </ol>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: RECORDING, STORAGE & CLOUD DVR -->
+        <!-- ========================================== -->
+        <div id="tab-recording" class="tab-content space-y-6">
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-xl">
+                <div class="p-6 border-b border-slate-700 bg-slate-800/80">
+                    <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-hard-drive text-slate-400 mr-2"></i> Hardware Requirements</h3>
+                    <p class="text-slate-300 text-sm mb-4">Streaming devices have minimal storage (1 hour of HD = 4GB). You <strong>must</strong> add external storage to record live TV.</p>
+                    <ul class="list-disc list-outside ml-5 text-slate-300 text-sm space-y-2 mb-4">
+                        <li><strong>OTG Cable / Adapter:</strong> Splits the power port so you can plug a USB drive into the Firestick.</li>
+                        <li><strong>USB Flash Drive:</strong> Must be formatted to <strong>FAT32</strong>.</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 space-y-8">
+                    
+                    <!-- Advanced Workarounds -->
+                    <div>
+                        <h4 class="font-bold text-white mb-3 text-lg border-l-4 border-red-500 pl-3">Bypassing Android OS Recording Blocks</h4>
+                        <p class="text-sm text-slate-400 mb-4">Modern Android/FireOS actively blocks external recording. You must use one of these workarounds to give TiviMate permission to save files:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-8 h-8 bg-red-500 transform rotate-45 translate-x-4 -translate-y-4"></div>
+                                <h5 class="text-brand-400 font-bold text-sm mb-2">Hack 1: The Android Folder Trick</h5>
+                                <p class="text-xs text-slate-400 mb-2">If you get a "You don't have an app that can do this" error:</p>
+                                <ol class="list-decimal list-outside ml-4 text-xs text-slate-300 space-y-1.5">
+                                    <li>Install a File Manager (like X-plore).</li>
+                                    <li>Open your USB Drive, go to <code class="bg-slate-800 px-1 rounded text-white">Android > media</code>.</li>
+                                    <li>Create a new folder named EXACTLY: <code class="bg-slate-800 px-1 rounded font-bold text-brand-400">ar.tvplayer.tv</code></li>
+                                    <li>Go back to TiviMate > Settings > Recording, and select that specific folder. The OS grants implicit permission to it.</li>
+                                </ol>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-8 h-8 bg-red-500 transform rotate-45 translate-x-4 -translate-y-4"></div>
+                                <h5 class="text-red-400 font-bold text-sm mb-2">Hack 2: FireOS 8 System Picker Broken</h5>
+                                <p class="text-xs text-slate-400 mb-2">On FireOS 8, the graphical OK button is hidden. Use an ADB app on your phone to force the keystroke:</p>
+                                <ol class="list-decimal list-outside ml-4 text-xs text-slate-300 space-y-1.5">
+                                    <li>Open the broken folder screen on the TV.</li>
+                                    <li>Connect via "Remote ADB Shell" app on your phone.</li>
+                                    <li>Inject this exact code to force the hidden button:</li>
+                                </ol>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <code class="text-[10px] text-brand-400 bg-slate-800 p-1 rounded block truncate w-full">input keyevent 61 && input keyevent 66 && input keyevent 61 && input keyevent 62 dpad</code>
+                                    <button onclick="copyToClipboard('input keyevent 61 && input keyevent 66 && input keyevent 61 && input keyevent 62 dpad')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-copy"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How to actually record -->
+                    <div>
+                        <h4 class="font-bold text-white mb-3 text-lg border-l-4 border-emerald-500 pl-3">How to actually Record Live TV</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h5 class="text-white font-bold text-sm mb-2"><i class="fa-solid fa-play text-brand-400 mr-2"></i> Recording Right Now</h5>
+                                <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1.5">
+                                    <li>While watching the channel, press 🔘 <strong>Select</strong>.</li>
+                                    <li>Press ➡️ <strong>Right</strong> to highlight the 🔴 <strong>Record icon</strong>.</li>
+                                    <li>Click 🔘 <strong>Select</strong> to start recording.</li>
+                                </ol>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h5 class="text-white font-bold text-sm mb-2"><i class="fa-solid fa-clock text-blue-400 mr-2"></i> Scheduling the Future</h5>
+                                <ol class="list-decimal list-outside ml-4 text-sm text-slate-300 space-y-1.5">
+                                    <li>In the TV Guide, highlight a future program.</li>
+                                    <li>Press and hold 🔘 <strong>Select</strong> for 2 seconds.</li>
+                                    <li>Click <strong>Custom Recording</strong>.</li>
+                                    <li>Verify the times and hit Schedule.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: HARDWARE UPGRADES (2026 MATRIX) -->
+        <!-- ========================================== -->
+        <div id="tab-hardware" class="tab-content space-y-8">
+            <div class="bg-brand-500/10 border border-brand-500/30 rounded-xl p-5 mb-6">
+                <h3 class="text-lg font-bold text-brand-400 mb-2">Why ditch the Firestick in 2026?</h3>
+                <p class="text-sm text-brand-100/80">Amazon's recent updates actively block you from customizing your TV, hide developer options (making sideloading harder), and push massive video ads that slow down the processor. The IPTV community has universally migrated to pure Android TV / Google TV architectures.</p>
+            </div>
+
+            <!-- 2026 Hardware Migration Matrix -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-lg overflow-hidden mb-8">
+                <div class="p-4 bg-slate-900 border-b border-slate-700">
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-table border-brand-500 mr-2"></i> 2026 Hardware Upgrades</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full matrix-table text-sm text-slate-300">
+                        <thead>
+                            <tr>
+                                <th>Device Model</th>
+                                <th>RAM / Storage</th>
+                                <th>Why buy it?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-slate-700/50">
+                                <td class="font-bold text-white">Walmart Onn 4K Pro</td>
+                                <td>3GB / 32GB</td>
+                                <td>Unbeatable budget value; Built-in USB port for recording.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/50">
+                                <td class="font-bold text-white">Google TV Streamer 4K</td>
+                                <td>4GB / 32GB</td>
+                                <td>Premium mainstream choice; fastest UI; replaces Chromecast.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/50">
+                                <td class="font-bold text-white">Nvidia Shield TV Pro</td>
+                                <td>3GB / 16GB</td>
+                                <td>Home theater purists; AI-upscales 720p sports to 4K.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/50">
+                                <td class="font-bold text-white">Formuler Z12 Ultra</td>
+                                <td>4GB / 128GB</td>
+                                <td>Heavy DVR users; massive internal storage; dedicated TV remote.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Highlight 1: ONN 4K Pro -->
+                <div class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-lg relative">
+                    <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">Budget King</div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-box text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Walmart ONN 4K Pro</h3>
+                        </div>
+                        <p class="text-slate-300 text-sm mb-4">The absolute best bang for your buck. Runs pure Google TV, has 3x the memory of a Firestick, and best of all: it already has a USB port built into it so you don't have to buy messy OTG cables to record TV.</p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono text-blue-400">
+                            <span class="bg-slate-900 px-2 py-1 rounded">No Amazon Ads</span>
+                            <span class="bg-slate-900 px-2 py-1 rounded">Native USB</span>
+                            <span class="bg-slate-900 px-2 py-1 rounded">Wi-Fi 6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlight 3: Nvidia Shield -->
+                <div class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-lg relative">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">Premium Power</div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-microchip text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white">Nvidia Shield TV Pro</h3>
+                        </div>
+                        <p class="text-slate-300 text-sm mb-4">The flagship powerhouse. If money is no object, buy this. It uses Neural-Network AI to take slightly blurry 720p football games and magically upscale them to look like 4K broadcasts in real-time.</p>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono text-emerald-400">
+                            <span class="bg-slate-900 px-2 py-1 rounded">AI Upscaling</span>
+                            <span class="bg-slate-900 px-2 py-1 rounded">Dual USB 3.0</span>
+                            <span class="bg-slate-900 px-2 py-1 rounded">Zero Lag</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 7: REFERENCE MAP -->
+        <!-- ========================================== -->
+        <div id="tab-reference" class="tab-content space-y-6">
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 lg:p-10 flex flex-col lg:flex-row gap-10 items-center lg:items-start shadow-xl">
+                
+                <!-- CSS Built Remote Graphic -->
+                <div class="remote-body w-48 rounded-[40px] p-4 flex flex-col items-center gap-6 relative shrink-0 mx-auto lg:mx-0">
+                    <!-- Power & Mic Row -->
+                    <div class="flex justify-between w-full px-2 mt-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-power-off text-red-500 text-xs"></i>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-microphone text-blue-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Directional Ring (The Circle) -->
+                    <div class="nav-ring w-36 h-36 rounded-full relative flex items-center justify-center">
+                        <div class="absolute top-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-up"></i></div>
+                        <div class="absolute bottom-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-down"></i></div>
+                        <div class="absolute left-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-left"></i></div>
+                        <div class="absolute right-2 text-slate-500 text-xs"><i class="fa-solid fa-caret-right"></i></div>
+                        <!-- Select Button -->
+                        <div class="center-btn w-14 h-14 rounded-full flex items-center justify-center relative z-10 border border-slate-600">
+                            <span class="text-slate-500 text-[10px] font-bold tracking-widest opacity-30">OK</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 1: Back, Home, Menu -->
+                    <div class="flex justify-between w-full px-1">
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-arrow-left text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-house text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-bars text-slate-300 text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Rewind, Play/Pause, Fast Forward -->
+                    <div class="flex justify-between w-full px-1">
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-backward text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-play text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-forward text-slate-300 text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Text -->
+                <div class="flex-1 w-full space-y-6">
+                    <h3 class="text-xl font-bold border-b border-slate-700 pb-2 text-white">The TiviMate Remote Layout</h3>
+                    
+                    <div class="space-y-4 text-sm text-slate-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">🔘</span> Center Button</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press:</span> Opens the Quick Menu.</li>
+                                    <li><span class="text-brand-400 font-semibold">Long press:</span> Opens the Options menu.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">↩️</span> Back Button</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press:</span> Returns to TV Guide.</li>
+                                    <li><span class="text-brand-400 font-semibold">Long press:</span> Jumps back to Full Screen.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">⬅️</span> Left Directional</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press:</span> Opens the Categories menu.</li>
+                                    <li><span class="text-brand-400 font-semibold">Long press:</span> Rewinds to Past Shows.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                                <h4 class="font-bold text-white mb-2 flex items-center"><span class="text-xl mr-2">➡️</span> Right Directional</h4>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><span class="text-brand-400 font-semibold">Quick press:</span> Jumps to the Last Watched channel.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Codes -->
+                        <div class="mt-8 pt-6 border-t border-slate-700 flex flex-col md:flex-row gap-6">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-white mb-3">What do the Error Codes mean?</h4>
+                                <div class="space-y-2 text-xs">
+                                    <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-red-400">401 Unauthorized</span>: Subscription expired or wrong password.</div>
+                                    <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-orange-400">403 Forbidden</span>: Internet Provider is blocking you. Use a VPN.</div>
+                                    <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-yellow-400">456 Max</span>: Playing on too many TVs at once.</div>
+                                    <div class="bg-slate-800 p-2 rounded"><span class="font-bold text-slate-400">504 Gateway</span>: TV Server crashed. Check back later.</div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-white mb-3">App Downloader Codes</h4>
+                                <div class="space-y-2 text-xs flex flex-col">
+                                    <p class="text-[10px] text-slate-500 mb-1 leading-tight">Use these numbers in the Downloader App to install software:</p>
+                                    <span class="bg-slate-800 p-2 rounded flex justify-between items-center cursor-pointer hover:bg-slate-700" onclick="copyToClipboard('272483')">Latest TiviMate: <strong class="text-brand-400 font-mono text-sm">272483</strong></span>
+                                    <span class="bg-slate-800 p-2 rounded flex justify-between items-center cursor-pointer hover:bg-slate-700" onclick="copyToClipboard('6911785')">Older TiviMate v5.1.6: <strong class="text-slate-300 font-mono text-sm">6911785</strong></span>
+                                    <span class="bg-slate-800 p-2 rounded flex justify-between items-center cursor-pointer hover:bg-slate-700" onclick="copyToClipboard('40213')">Companion App: <strong class="text-slate-300 font-mono text-sm">40213</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-500 text-sm mt-10">
+        <p>Created for simple, parent-proof remote support.</p>
+        <p class="mt-2">Disclaimer: This guide is for educational troubleshooting purposes only.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Tab Switching Logic
+        function openTab(tabId) {
+            // Hide all tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active classes from all buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.classList.remove('bg-brand-600', 'text-white', 'shadow-lg', 'shadow-brand-500/20');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active classes to clicked button
+            const activeBtnId = tabId.replace('tab-', 'btn-');
+            const activeBtn = document.getElementById(activeBtnId);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow-lg', 'shadow-brand-500/20');
+                
+                // Scroll the tab menu so the clicked button is visible (mobile focus)
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            // Scroll slightly up so header isn't covering content
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            
+            try {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                }).catch(() => {
+                    document.execCommand('copy');
+                    showToast();
+                });
+            } catch (err) {
+                document.execCommand('copy');
+                showToast();
+            }
+            
+            document.body.removeChild(el);
+        }
+
+        // Show Toast Notification
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+    </script>
+</body>
+</html>
